@@ -1,0 +1,1981 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear you, Whoever you are</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        night: {
+                            900: '#0B0D17',
+                            800: '#13172B',
+                            700: '#1C223D',
+                            600: '#2A3356',
+                        },
+                        amber: {
+                            glow: '#FDE68A',
+                            soft: '#FEF3C7',
+                        },
+                        ethereal: {
+                            rose: '#FDA4AF',
+                            lavender: '#DDD6FE',
+                            teal: '#99F6E4',
+                            amber: '#FDE68A'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        handwritten: ['Caveat', 'cursive']
+                    },
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-10px) rotate(1deg)' },
+                        },
+                        glow: {
+                            '0%': { opacity: '0.4', filter: 'blur(20px)' },
+                            '100%': { opacity: '0.8', filter: 'blur(30px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 13, 23, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .glass-panel {
+            background: rgba(19, 23, 43, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel-light {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .letter-paper {
+            background-color: #fbf8f3;
+            background-image: radial-gradient(#e5e0d8 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+            color: #2c2a29;
+        }
+        .dark .letter-paper {
+            background-color: #171b30;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.07) 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+            color: #e2e8f0;
+        }
+
+        /* Particle Canvas */
+        #starCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Envelope Fold Animation */
+        .envelope-wrapper {
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .releasing {
+            transform: scale(0.1) translateY(-600px) rotate(12deg);
+            opacity: 0;
+            filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-night-900 text-slate-200 font-sans min-h-screen relative overflow-x-hidden antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+
+    <!-- Starry Background Canvas -->
+    <canvas id="starCanvas"></canvas>
+
+    <!-- Ambient Glowing Orbs -->
+    <div class="fixed top-1/4 left-10 w-96 h-96 bg-indigo-900/20 rounded-full animate-glow pointer-events-none -z-10"></div>
+    <div class="fixed bottom-1/3 right-10 w-[30rem] h-[30rem] bg-rose-900/15 rounded-full animate-glow pointer-events-none -z-10" style="animation-delay: 1.5s;"></div>
+    <div class="fixed top-2/3 left-1/3 w-80 h-80 bg-teal-900/15 rounded-full animate-glow pointer-events-none -z-10" style="animation-delay: 3s;"></div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 border-b border-white/5 glass-panel px-4 lg:px-8 py-3.5 transition-all">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Brand -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('feed')">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500/30 to-amber-300/30 border border-white/20 flex items-center justify-center text-amber-200 text-sm shadow-inner">
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif text-xl sm:text-2xl font-normal tracking-wide text-slate-100 flex items-center gap-2">
+                        Dear you, <span class="text-xs sm:text-sm font-sans tracking-widest text-amber-200/70 uppercase">whoever you are</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Audio & Tab Actions -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Ambient Sound Player Toggle -->
+                <button id="soundToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-full glass-panel-light text-xs font-medium text-slate-300 hover:text-amber-200 hover:border-amber-400/30 transition-all flex items-center gap-2" title="Toggle Atmospheric Audio">
+                    <i id="soundIcon" class="fa-solid fa-volume-xmark text-slate-400"></i>
+                    <span id="soundLabel" class="hidden sm:inline">Ambient Audio</span>
+                </button>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center gap-1 bg-black/20 p-1 rounded-full border border-white/5">
+                    <button id="tabBtn-feed" onclick="switchTab('feed')" class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all bg-white/10 text-white shadow-sm">
+                        <i class="fa-solid fa-compass sm:mr-1.5"></i><span class="hidden sm:inline">Ocean of Letters</span>
+                    </button>
+                    <button id="tabBtn-write" onclick="switchTab('write')" class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all">
+                        <i class="fa-solid fa-pen-nib sm:mr-1.5"></i><span class="hidden sm:inline">Write</span>
+                    </button>
+                    <button id="tabBtn-sanctuary" onclick="switchTab('sanctuary')" class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all relative">
+                        <i class="fa-solid fa-box-archive sm:mr-1.5"></i><span class="hidden sm:inline">Sanctuary</span>
+                        <span id="savedBadge" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full"></span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+
+        <!-- Welcome / Intent Banner -->
+        <div id="welcomeBanner" class="mb-8 p-6 rounded-2xl glass-panel border-amber-500/10 relative overflow-hidden group">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="space-y-1.5 max-w-3xl">
+                    <h2 class="font-serif text-2xl sm:text-3xl font-light text-amber-100/90 tracking-wide">
+                        Leave your thoughts to the night sky.
+                    </h2>
+                    <p class="text-sm text-slate-300/80 leading-relaxed font-light">
+                        This is a quiet corner for your unsaid words, heavy hearts, quiet celebrations, and unposted letters. No real names, no algorithms, no judgment. Just human souls reaching out across the dark.
+                    </p>
+                </div>
+                <div class="flex items-center gap-3 self-end sm:self-center">
+                    <button onclick="openRandomLetterModal()" class="px-4 py-2 rounded-xl bg-amber-400/10 hover:bg-amber-400/20 text-amber-200 border border-amber-400/20 text-xs font-medium transition-all flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Read Random Unread
+                    </button>
+                    <button onclick="dismissBanner()" class="text-slate-500 hover:text-slate-300 text-xs p-2" title="Dismiss Message">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 1: OCEAN OF LETTERS (FEED) ================= -->
+        <section id="section-feed" class="space-y-6">
+            <!-- Filter & Search Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-4 glass-panel p-4 rounded-2xl border border-white/5">
+                <!-- Mood Filter Badges -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 w-full lg:w-auto scrollbar-none">
+                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider mr-1 flex items-center gap-1">
+                        <i class="fa-solid fa-filter text-[10px]"></i> Tone:
+                    </span>
+                    <button onclick="filterByMood('all')" class="mood-filter-btn active px-3 py-1 rounded-full text-xs font-medium transition-all bg-white/15 text-amber-200 border border-white/10" data-mood="all">
+                        All Letters
+                    </button>
+                    <button onclick="filterByMood('Hopeful')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-teal-200" data-mood="Hopeful">
+                        🌱 Hopeful
+                    </button>
+                    <button onclick="filterByMood('Heartbroken')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-rose-200" data-mood="Heartbroken">
+                        🌧️ Heartbroken
+                    </button>
+                    <button onclick="filterByMood('Nostalgic')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-amber-200" data-mood="Nostalgic">
+                        🍂 Nostalgic
+                    </button>
+                    <button onclick="filterByMood('Grateful')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-emerald-200" data-mood="Grateful">
+                        ✨ Grateful
+                    </button>
+                    <button onclick="filterByMood('Silent Longing')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-indigo-200" data-mood="Silent Longing">
+                        🌙 Silent Longing
+                    </button>
+                </div>
+
+                <!-- Recipient Search Input -->
+                <div class="relative w-full sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search recipients, tags..." class="w-full bg-black/30 border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400/40 transition-all">
+                </div>
+            </div>
+
+            <!-- Letter Cards Grid -->
+            <div id="lettersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated letters -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyFeedState" class="hidden text-center py-16 space-y-4">
+                <div class="w-16 h-16 mx-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 text-xl">
+                    <i class="fa-regular fa-paper-plane"></i>
+                </div>
+                <p class="font-serif text-xl text-slate-300">No letters found matching this whisper.</p>
+                <button onclick="filterByMood('all')" class="text-xs text-amber-300 underline underline-offset-4">Reset filter criteria</button>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 2: WRITE A LETTER (COMPOSER) ================= -->
+        <section id="section-write" class="hidden max-w-3xl mx-auto space-y-6">
+            <div class="text-center space-y-2 mb-6">
+                <h2 class="font-serif text-3xl font-light text-amber-100">Speak into the Silence</h2>
+                <p class="text-xs text-slate-400 max-w-md mx-auto">
+                    Take a deep breath. Write what you couldn't say. Release it anonymously into the universe or keep it locked inside your local sanctuary.
+                </p>
+            </div>
+
+            <!-- Main Composer Card -->
+            <div id="composerCard" class="envelope-wrapper letter-paper rounded-2xl p-6 sm:p-10 shadow-2xl relative border border-black/10 dark:border-white/10">
+                <form id="letterForm" onsubmit="handleReleaseLetter(event)" class="space-y-6">
+                    
+                    <!-- Recipient & Privacy Selector -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-2 space-y-1.5">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">To (Recipient)</label>
+                            <div class="relative">
+                                <input type="text" id="recipientInput" required list="recipientSuggestions" placeholder="e.g., Someone I miss, My 18-year-old self..." class="w-full bg-transparent border-b border-slate-300 dark:border-slate-700 py-2 text-sm sm:text-base font-serif italic text-slate-800 dark:text-slate-100 focus:outline-none focus:border-amber-500 transition-all placeholder-slate-400">
+                                <datalist id="recipientSuggestions">
+                                    <option value="To: Someone I miss"></option>
+                                    <option value="To: The stranger on the train"></option>
+                                    <option value="To: My past self"></option>
+                                    <option value="To: My future self"></option>
+                                    <option value="To: Anyone listening"></option>
+                                    <option value="To: You, who broke my heart"></option>
+                                </datalist>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Letter Purpose</label>
+                            <select id="privacyInput" class="w-full bg-black/5 dark:bg-white/5 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-sans text-slate-700 dark:text-slate-200 focus:outline-none focus:border-amber-500">
+                                <option value="public">🌐 Release to Universe (Public)</option>
+                                <option value="private">🔒 Keep in Private Sanctuary</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subject / Title -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Subject / Title (Optional)</label>
+                        <input type="text" id="titleInput" placeholder="A quiet title..." class="w-full bg-transparent border-b border-slate-200 dark:border-slate-800 py-1.5 text-sm font-sans text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-500 transition-all">
+                    </div>
+
+                    <!-- Mood / Tone Selection -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Emotional Tone</label>
+                        <div class="flex flex-wrap gap-2" id="composerMoods">
+                            <button type="button" onclick="selectComposerMood(this, 'Hopeful')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-teal-400 transition-all">🌱 Hopeful</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Heartbroken')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-rose-400 transition-all">🌧️ Heartbroken</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Nostalgic')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-amber-400 transition-all">🍂 Nostalgic</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Grateful')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-emerald-400 transition-all">✨ Grateful</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Silent Longing')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-indigo-400 transition-all">🌙 Silent Longing</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Confused')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-purple-400 transition-all">🌫️ Confused</button>
+                        </div>
+                    </div>
+
+                    <!-- Body TextArea -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Your Unsaid Words</label>
+                        <textarea id="bodyInput" required rows="9" placeholder="Dear you..." class="w-full bg-transparent border-none focus:outline-none font-serif text-base sm:text-lg text-slate-800 dark:text-slate-100 leading-relaxed resize-y placeholder-slate-400"></textarea>
+                    </div>
+
+                    <!-- Footer & Actions -->
+                    <div class="pt-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 text-xs text-slate-400">
+                            <button type="button" onclick="saveDraft()" class="hover:text-amber-300 transition-all flex items-center gap-1.5">
+                                <i class="fa-regular fa-floppy-disk"></i> Save Local Draft
+                            </button>
+                            <span id="draftStatus" class="italic text-emerald-400 hidden">Saved!</span>
+                        </div>
+
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <button type="button" onclick="clearComposer()" class="w-1/2 sm:w-auto px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-slate-200 transition-all">Clear</button>
+                            <button type="submit" class="w-1/2 sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400/90 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-night-900 font-medium text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Release to the Wind</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 3: SANCTUARY (PERSONAL ARCHIVE) ================= -->
+        <section id="section-sanctuary" class="hidden space-y-8">
+            <div class="text-center space-y-2">
+                <h2 class="font-serif text-3xl font-light text-amber-100">Your Local Sanctuary</h2>
+                <p class="text-xs text-slate-400 max-w-md mx-auto">
+                    Letters you have kept strictly private on your device, alongside favorite community whispers you've saved to revisit.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Private Unsent Letters -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                        <h3 class="font-serif text-xl text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-lock text-xs text-amber-300"></i> Private Letters (Only on this device)
+                        </h3>
+                        <span id="privateCount" class="text-xs bg-white/10 px-2.5 py-0.5 rounded-full text-slate-400">0</span>
+                    </div>
+                    <div id="privateLettersList" class="space-y-4">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Saved Favorites -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                        <h3 class="font-serif text-xl text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-bookmark text-xs text-amber-300"></i> Saved Whispers
+                        </h3>
+                        <span id="favoritesCount" class="text-xs bg-white/10 px-2.5 py-0.5 rounded-full text-slate-400">0</span>
+                    </div>
+                    <div id="favoriteLettersList" class="space-y-4">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= SINGLE LETTER READER MODAL ================= -->
+    <div id="letterModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-all opacity-0">
+        <div class="letter-paper max-w-2xl w-full max-h-[85vh] rounded-2xl shadow-2xl overflow-y-auto p-6 sm:p-10 relative border border-white/20 transform scale-95 transition-transform duration-300" id="modalCard">
+            <!-- Close Button -->
+            <button onclick="closeLetterModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-black/20 transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Modal Content Header -->
+            <div class="space-y-3 mb-6">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span id="modalRecipient" class="font-serif italic text-lg sm:text-xl text-slate-700 dark:text-amber-200">To: Someone</span>
+                    <span id="modalMood" class="text-xs px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-slate-600 dark:text-slate-300">Tone</span>
+                </div>
+                <h3 id="modalTitle" class="font-sans text-xl font-medium text-slate-900 dark:text-slate-100">Title</h3>
+                <p id="modalTimestamp" class="text-xs text-slate-500 font-sans">Written under the midnight sky</p>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div id="modalBody" class="font-serif text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap border-t border-b border-black/10 dark:border-white/10 py-6 my-4">
+                Letter text goes here...
+            </div>
+
+            <!-- Modal Reaction Footer -->
+            <div class="space-y-4 pt-2">
+                <div class="text-xs text-slate-500 uppercase tracking-wider font-sans font-semibold">Send a gentle reaction</div>
+                <div class="flex flex-wrap items-center gap-2" id="modalReactionsContainer">
+                    <!-- Buttons generated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 glass-panel border-amber-400/30 text-amber-200 px-4 py-3 rounded-xl shadow-2xl text-xs sm:text-sm flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0">
+        <i class="fa-solid fa-sparkles text-amber-300"></i>
+        <span id="toastMessage">Your letter has been sent to the universe.</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        /* ================= INITIAL SEED DATA ================= */
+        const DEFAULT_LETTERS = [
+            {
+                id: 'l-101',
+                recipient: 'To: The stranger on the train',
+                title: 'You were reading Murakami',
+                body: 'We sat across from each other for forty-five minutes. You kept turning pages softly, and for a moment, the chaotic city noise just vanished. I almost asked what chapter you were on. I hope wherever your destination was, you reached it safely.',
+                mood: 'Nostalgic',
+                timestamp: 'Written at 11:42 PM under rain',
+                reactions: { heard: 14, light: 22, feel: 9, space: 18 },
+                isPublic: true
+            },
+            {
+                id: 'l-102',
+                recipient: 'To: My past self (age 17)',
+                title: 'It gets quieter, I promise',
+                body: 'I know you are sitting on the cold bathroom floor wondering how you will survive next week. Take a breath. We made it. We have a quiet apartment now, plants by the window, and a dog who sleeps at our feet. The storm passes.',
+                mood: 'Hopeful',
+                timestamp: 'Written at 2:15 AM under quiet stars',
+                reactions: { heard: 45, light: 60, feel: 38, space: 29 },
+                isPublic: true
+            },
+            {
+                id: 'l-103',
+                recipient: 'To: You, who walked away',
+                title: 'I stopped placing two cups out',
+                body: 'For months, I accidentally made coffee for two every single morning. Today was the first time I only poured one without feeling a sharp pang in my chest. I still care about you, but I am learning to let the silence be okay.',
+                mood: 'Heartbroken',
+                timestamp: 'Written at 4:05 AM in early morning fog',
+                reactions: { heard: 31, light: 19, feel: 44, space: 33 },
+                isPublic: true
+            },
+            {
+                id: 'l-104',
+                recipient: 'To: Anyone who feels invisible tonight',
+                title: 'A small candle in the dark',
+                body: 'If no one told you today: your presence matters. The quiet way you make tea, the gentle way you look at the sunset, the kindness you give even when exhausted. You leave warm ripples in this world.',
+                mood: 'Grateful',
+                timestamp: 'Written at 1:12 AM under clear skies',
+                reactions: { heard: 88, light: 120, feel: 52, space: 70 },
+                isPublic: true
+            },
+            {
+                id: 'l-105',
+                recipient: 'To: The city I left behind',
+                title: 'Neon shadows',
+                body: 'Do you still smell like summer rain and old bookshops? I miss the midnight walks along the river, but I had to grow somewhere else.',
+                mood: 'Silent Longing',
+                timestamp: 'Written at 3:30 AM',
+                reactions: { heard: 12, light: 8, feel: 15, space: 11 },
+                isPublic: true
+            }
+        ];
+
+        /* ================= STATE MANAGEMENT ================= */
+        let state = {
+            letters: [],
+            privateLetters: [],
+            savedFavorites: [],
+            selectedMoodFilter: 'all',
+            searchQuery: '',
+            composerSelectedMood: 'Hopeful',
+            audioPlaying: false
+        };
+
+        // Web Audio Context for ambient sounds
+        let audioCtx = null;
+        let ambientOscillator = null;
+        let ambientGain = null;
+        let rainBufferNode = null;
+
+        /* ================= INITIALIZATION ================= */
+        window.onload = function() {
+            initStars();
+            loadLocalStorage();
+            renderFeed();
+            renderSanctuary();
+            setupReactions();
+        };
+
+        function loadLocalStorage() {
+            // Load public/community letters or default
+            const localPublic = localStorage.getItem('dearyou_letters');
+            if (localPublic) {
+                try { state.letters = JSON.parse(localPublic); } catch (e) { state.letters = DEFAULT_LETTERS; }
+            } else {
+                state.letters = DEFAULT_LETTERS;
+                localStorage.setItem('dearyou_letters', JSON.stringify(DEFAULT_LETTERS));
+            }
+
+            // Load private letters
+            const localPrivate = localStorage.getItem('dearyou_private_letters');
+            if (localPrivate) {
+                try { state.privateLetters = JSON.parse(localPrivate); } catch (e) { state.privateLetters = []; }
+            }
+
+            // Load saved favorite IDs
+            const localFavs = localStorage.getItem('dearyou_favorites');
+            if (localFavs) {
+                try { state.savedFavorites = JSON.parse(localFavs); } catch (e) { state.savedFavorites = []; }
+            }
+
+            updateSavedBadge();
+        }
+
+        /* ================= NAVIGATION & TABS ================= */
+        function switchTab(tabName) {
+            const tabs = ['feed', 'write', 'sanctuary'];
+            tabs.forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tabBtn-${t}`);
+                if (t === tabName) {
+                    sec.classList.remove('hidden');
+                    btn.classList.add('bg-white/10', 'text-white', 'shadow-sm');
+                    btn.classList.remove('text-slate-400');
+                } else {
+                    sec.classList.add('hidden');
+                    btn.classList.remove('bg-white/10', 'text-white', 'shadow-sm');
+                    btn.classList.add('text-slate-400');
+                }
+            });
+
+            if (tabName === 'sanctuary') renderSanctuary();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function dismissBanner() {
+            document.getElementById('welcomeBanner').classList.add('hidden');
+        }
+
+        /* ================= COMPOSER LOGIC ================= */
+        function selectComposerMood(btn, mood) {
+            document.querySelectorAll('#composerMoods button').forEach(b => {
+                b.classList.remove('bg-amber-400/20', 'border-amber-400', 'text-amber-200');
+            });
+            btn.classList.add('bg-amber-400/20', 'border-amber-400', 'text-amber-200');
+            state.composerSelectedMood = mood;
+        }
+
+        function handleReleaseLetter(event) {
+            event.preventDefault();
+            const recipient = document.getElementById('recipientInput').value.trim();
+            const title = document.getElementById('titleInput').value.trim() || 'Untitled Whisper';
+            const body = document.getElementById('bodyInput').value.trim();
+            const privacy = document.getElementById('privacyInput').value;
+
+            if (!recipient || !body) return;
+
+            const newLetter = {
+                id: 'l-' + Date.now(),
+                recipient: recipient,
+                title: title,
+                body: body,
+                mood: state.composerSelectedMood || 'Hopeful',
+                timestamp: `Written at ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} under the midnight sky`,
+                reactions: { heard: 1, light: 1, feel: 0, space: 0 },
+                isPublic: privacy === 'public'
+            };
+
+            const card = document.getElementById('composerCard');
+            card.classList.add('releasing');
+
+            setTimeout(() => {
+                if (privacy === 'public') {
+                    state.letters.unshift(newLetter);
+                    localStorage.setItem('dearyou_letters', JSON.stringify(state.letters));
+                    showToast("Your letter has been released into the night sky.");
+                } else {
+                    state.privateLetters.unshift(newLetter);
+                    localStorage.setItem('dearyou_private_letters', JSON.stringify(state.privateLetters));
+                    showToast("Saved to your Private Sanctuary.");
+                }
+
+                clearComposer();
+                card.classList.remove('releasing');
+                renderFeed();
+                renderSanctuary();
+                switchTab(privacy === 'public' ? 'feed' : 'sanctuary');
+            }, 700);
+        }
+
+        function saveDraft() {
+            const draft = {
+                recipient: document.getElementById('recipientInput').value,
+                title: document.getElementById('titleInput').value,
+                body: document.getElementById('bodyInput').value,
+                mood: state.composerSelectedMood
+            };
+            localStorage.setItem('dearyou_draft', JSON.stringify(draft));
+            const status = document.getElementById('draftStatus');
+            status.classList.remove('hidden');
+            setTimeout(() => status.classList.add('hidden'), 2000);
+        }
+
+        function clearComposer() {
+            document.getElementById('letterForm').reset();
+            localStorage.removeItem('dearyou_draft');
+        }
+
+        /* ================= FEED & CARDS RENDER ================= */
+        function filterByMood(mood) {
+            state.selectedMoodFilter = mood;
+            document.querySelectorAll('.mood-filter-btn').forEach(btn => {
+                if (btn.dataset.mood === mood) {
+                    btn.classList.add('bg-white/15', 'text-amber-200', 'border-white/10');
+                    btn.classList.remove('glass-panel-light', 'text-slate-300');
+                } else {
+                    btn.classList.remove('bg-white/15', 'text-amber-200', 'border-white/10');
+                    btn.classList.add('glass-panel-light', 'text-slate-300');
+                }
+            });
+            renderFeed();
+        }
+
+        function handleSearch() {
+            state.searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            renderFeed();
+        }
+
+        function renderFeed() {
+            const grid = document.getElementById('lettersGrid');
+            const empty = document.getElementById('emptyFeedState');
+            grid.innerHTML = '';
+
+            const filtered = state.letters.filter(letter => {
+                const matchesMood = state.selectedMoodFilter === 'all' || letter.mood === state.selectedMoodFilter;
+                const matchesSearch = letter.recipient.toLowerCase().includes(state.searchQuery) ||
+                                      letter.title.toLowerCase().includes(state.searchQuery) ||
+                                      letter.body.toLowerCase().includes(state.searchQuery);
+                return matchesMood && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            } else {
+                empty.classList.add('hidden');
+            }
+
+            filtered.forEach(letter => {
+                const isFav = state.savedFavorites.includes(letter.id);
+                const card = document.createElement('div');
+                card.className = "glass-panel p-6 rounded-2xl flex flex-col justify-between hover:border-white/20 transition-all hover:-translate-y-1 group relative overflow-hidden";
+                
+                card.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="flex items-start justify-between gap-2">
+                            <span class="font-serif italic text-amber-200/90 text-sm sm:text-base font-normal tracking-wide">${escapeHtml(letter.recipient)}</span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded-full glass-panel-light text-slate-300 border border-white/10">${getMoodEmoji(letter.mood)} ${letter.mood}</span>
+                        </div>
+                        <h4 class="font-sans font-medium text-slate-100 text-base leading-snug">${escapeHtml(letter.title)}</h4>
+                        <p class="font-serif text-slate-300/90 text-sm leading-relaxed line-clamp-4 italic font-light">
+                            "${escapeHtml(letter.body)}"
+                        </p>
+                    </div>
+
+                    <div class="pt-4 mt-6 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+                        <span class="text-[11px] font-sans text-slate-400">${letter.timestamp}</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleBookmark('${letter.id}')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 ${isFav ? 'text-amber-300' : ''}" title="Bookmark">
+                                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
+                            </button>
+                            <button onclick="openLetterModal('${letter.id}')" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-slate-200 transition-all font-medium text-[11px] flex items-center gap-1">
+                                Read <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* ================= MODAL READER & REACTIONS ================= */
+        let currentModalLetterId = null;
+
+        function openLetterModal(id) {
+            const letter = state.letters.find(l => l.id === id) || state.privateLetters.find(l => l.id === id);
+            if (!letter) return;
+
+            currentModalLetterId = id;
+            document.getElementById('modalRecipient').innerText = letter.recipient;
+            document.getElementById('modalMood').innerText = `${getMoodEmoji(letter.mood)} ${letter.mood}`;
+            document.getElementById('modalTitle').innerText = letter.title;
+            document.getElementById('modalTimestamp').innerText = letter.timestamp;
+            document.getElementById('modalBody').innerText = letter.body;
+
+            renderModalReactions(letter);
+
+            const modal = document.getElementById('letterModal');
+            const card = document.getElementById('modalCard');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                card.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeLetterModal() {
+            const modal = document.getElementById('letterModal');
+            const card = document.getElementById('modalCard');
+            modal.classList.add('opacity-0');
+            card.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function openRandomLetterModal() {
+            if (state.letters.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * state.letters.length);
+            openLetterModal(state.letters[randomIndex].id);
+        }
+
+        function renderModalReactions(letter) {
+            const container = document.getElementById('modalReactionsContainer');
+            container.innerHTML = '';
+
+            const reactions = [
+                { key: 'heard', label: 'You are heard', icon: '🕊️' },
+                { key: 'light', label: 'Sending light', icon: '✨' },
+                { key: 'feel', label: 'I feel this too', icon: '🌊' },
+                { key: 'space', label: 'Holding space', icon: '🕯️' }
+            ];
+
+            reactions.forEach(r => {
+                const count = (letter.reactions && letter.reactions[r.key]) || 0;
+                const btn = document.createElement('button');
+                btn.className = "px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 hover:bg-amber-400/20 text-slate-700 dark:text-slate-200 text-xs font-sans transition-all flex items-center gap-1.5 border border-black/10 dark:border-white/10";
+                btn.onclick = () => sendReaction(letter.id, r.key);
+                btn.innerHTML = `<span>${r.icon}</span> <span>${r.label}</span> <span class="text-[10px] opacity-70 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">${count}</span>`;
+                container.appendChild(btn);
+            });
+        }
+
+        function sendReaction(letterId, reactionKey) {
+            const letter = state.letters.find(l => l.id === letterId);
+            if (!letter) return;
+            if (!letter.reactions) letter.reactions = {};
+            letter.reactions[reactionKey] = (letter.reactions[reactionKey] || 0) + 1;
+
+            localStorage.setItem('dearyou_letters', JSON.stringify(state.letters));
+            renderModalReactions(letter);
+            renderFeed();
+            showToast("Warmth sent anonymously.");
+        }
+
+        /* ================= SANCTUARY & BOOKMARKS ================= */
+        function toggleBookmark(id) {
+            const idx = state.savedFavorites.indexOf(id);
+            if (idx > -1) {
+                state.savedFavorites.splice(idx, 1);
+                showToast("Removed from sanctuary.");
+            } else {
+                state.savedFavorites.push(id);
+                showToast("Saved to your sanctuary.");
+            }
+            localStorage.setItem('dearyou_favorites', JSON.stringify(state.savedFavorites));
+            updateSavedBadge();
+            renderFeed();
+            renderSanctuary();
+        }
+
+        function updateSavedBadge() {
+            const badge = document.getElementById('savedBadge');
+            if (state.savedFavorites.length > 0 || state.privateLetters.length > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function renderSanctuary() {
+            // Render Private
+            const privateContainer = document.getElementById('privateLettersList');
+            document.getElementById('privateCount').innerText = state.privateLetters.length;
+            privateContainer.innerHTML = '';
+
+            if (state.privateLetters.length === 0) {
+                privateContainer.innerHTML = `<div class="text-xs text-slate-500 italic py-4">No private letters written yet.</div>`;
+            } else {
+                state.privateLetters.forEach(letter => {
+                    const el = document.createElement('div');
+                    el.className = "glass-panel p-4 rounded-xl space-y-2 border border-white/5 relative group";
+                    el.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="font-serif italic text-amber-200 text-sm">${escapeHtml(letter.recipient)}</span>
+                            <button onclick="deletePrivateLetter('${letter.id}')" class="text-slate-500 hover:text-rose-400 text-xs p-1" title="Delete">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <h4 class="font-medium text-slate-200 text-sm">${escapeHtml(letter.title)}</h4>
+                        <p class="font-serif text-slate-300 text-xs line-clamp-2 italic">${escapeHtml(letter.body)}</p>
+                        <div class="pt-2 text-[10px] text-slate-500 flex justify-between items-center">
+                            <span>${letter.timestamp}</span>
+                            <button onclick="openLetterModal('${letter.id}')" class="text-amber-300 hover:underline">View</button>
+                        </div>
+                    `;
+                    privateContainer.appendChild(el);
+                });
+            }
+
+            // Render Saved Whispers
+            const favContainer = document.getElementById('favoriteLettersList');
+            const favLetters = state.letters.filter(l => state.savedFavorites.includes(l.id));
+            document.getElementById('favoritesCount').innerText = favLetters.length;
+            favContainer.innerHTML = '';
+
+            if (favLetters.length === 0) {
+                favContainer.innerHTML = `<div class="text-xs text-slate-500 italic py-4">No saved whispers yet. Click the bookmark icon on any letter.</div>`;
+            } else {
+                favLetters.forEach(letter => {
+                    const el = document.createElement('div');
+                    el.className = "glass-panel p-4 rounded-xl space-y-2 border border-white/5 relative";
+                    el.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="font-serif italic text-amber-200 text-sm">${escapeHtml(letter.recipient)}</span>
+                            <button onclick="toggleBookmark('${letter.id}')" class="text-amber-300 hover:text-slate-400 text-xs p-1" title="Remove">
+                                <i class="fa-solid fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <h4 class="font-medium text-slate-200 text-sm">${escapeHtml(letter.title)}</h4>
+                        <p class="font-serif text-slate-300 text-xs line-clamp-2 italic">${escapeHtml(letter.body)}</p>
+                        <div class="pt-2 text-[10px] text-slate-500 flex justify-between items-center">
+                            <span>${letter.timestamp}</span>
+                            <button onclick="openLetterModal('${letter.id}')" class="text-amber-300 hover:underline">Read</button>
+                        </div>
+                    `;
+                    favContainer.appendChild(el);
+                });
+            }
+        }
+
+        function deletePrivateLetter(id) {
+            state.privateLetters = state.privateLetters.filter(l => l.id !== id);
+            localStorage.setItem('dearyou_private_letters', JSON.stringify(state.privateLetters));
+            renderSanctuary();
+            showToast("Private letter deleted.");
+        }
+
+        /* ================= ATMOSPHERIC AUDIO (WEB AUDIO API) ================= */
+        function toggleAudio() {
+            const btn = document.getElementById('soundToggleBtn');
+            const icon = document.getElementById('soundIcon');
+            const label = document.getElementById('soundLabel');
+
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            if (!state.audioPlaying) {
+                // Play soft atmospheric synth drone
+                audioCtx.resume();
+                
+                ambientOscillator = audioCtx.createOscillator();
+                ambientGain = audioCtx.createGain();
+
+                ambientOscillator.type = 'sine';
+                ambientOscillator.frequency.setValueAtTime(110, audioCtx.currentTime); // A2 soft tone
+                
+                // Lowpass filter for warm atmosphere
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(350, audioCtx.currentTime);
+
+                ambientGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+                ambientGain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 3);
+
+                ambientOscillator.connect(filter);
+                filter.connect(ambientGain);
+                ambientGain.connect(audioCtx.destination);
+
+                ambientOscillator.start();
+
+                state.audioPlaying = true;
+                icon.className = "fa-solid fa-volume-high text-amber-300 animate-pulse";
+                label.innerText = "Ambient Playing";
+                btn.classList.add('border-amber-400/40');
+                showToast("Soft atmospheric audio enabled.");
+            } else {
+                if (ambientGain) {
+                    ambientGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1);
+                    setTimeout(() => {
+                        ambientOscillator.stop();
+                        ambientOscillator.disconnect();
+                    }, 1000);
+                }
+                state.audioPlaying = false;
+                icon.className = "fa-solid fa-volume-xmark text-slate-400";
+                label.innerText = "Ambient Audio";
+                btn.classList.remove('border-amber-400/40');
+            }
+        }
+
+        /* ================= BACKGROUND STARRY PARTICLES ================= */
+        function initStars() {
+            const canvas = document.getElementById('starCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = (canvas.width = window.innerWidth);
+            let height = (canvas.height = window.innerHeight);
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = Array.from({ length: 70 }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 1.5 + 0.5,
+                alpha: Math.random() * 0.7 + 0.2,
+                speed: Math.random() * 0.15 + 0.05,
+                drift: (Math.random() - 0.5) * 0.1
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                particles.forEach(p => {
+                    p.y -= p.speed;
+                    p.x += p.drift;
+
+                    if (p.y < 0) p.y = height;
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(253, 230, 138, ${p.alpha})`;
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        /* ================= UTILITY HELPERS ================= */
+        function getMoodEmoji(mood) {
+            const map = {
+                'Hopeful': '🌱',
+                'Heartbroken': '🌧️',
+                'Nostalgic': '🍂',
+                'Grateful': '✨',
+                'Silent Longing': '🌙',
+                'Confused': '🌫️'
+            };
+            return map[mood] || '🕊️';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+``````html
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear you, Whoever you are</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        night: {
+                            900: '#0B0D17',
+                            800: '#13172B',
+                            700: '#1C223D',
+                            600: '#2A3356',
+                        },
+                        amber: {
+                            glow: '#FDE68A',
+                            soft: '#FEF3C7',
+                        },
+                        ethereal: {
+                            rose: '#FDA4AF',
+                            lavender: '#DDD6FE',
+                            teal: '#99F6E4',
+                            amber: '#FDE68A'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        handwritten: ['Caveat', 'cursive']
+                    },
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-10px) rotate(1deg)' },
+                        },
+                        glow: {
+                            '0%': { opacity: '0.4', filter: 'blur(20px)' },
+                            '100%': { opacity: '0.8', filter: 'blur(30px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 13, 23, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .glass-panel {
+            background: rgba(19, 23, 43, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel-light {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .letter-paper {
+            background-color: #fbf8f3;
+            background-image: radial-gradient(#e5e0d8 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+            color: #2c2a29;
+        }
+        .dark .letter-paper {
+            background-color: #171b30;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.07) 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+            color: #e2e8f0;
+        }
+
+        /* Particle Canvas */
+        #starCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Envelope Fold Animation */
+        .envelope-wrapper {
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .releasing {
+            transform: scale(0.1) translateY(-600px) rotate(12deg);
+            opacity: 0;
+            filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-night-900 text-slate-200 font-sans min-h-screen relative overflow-x-hidden antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+
+    <!-- Starry Background Canvas -->
+    <canvas id="starCanvas"></canvas>
+
+    <!-- Ambient Glowing Orbs -->
+    <div class="fixed top-1/4 left-10 w-96 h-96 bg-indigo-900/20 rounded-full animate-glow pointer-events-none -z-10"></div>
+    <div class="fixed bottom-1/3 right-10 w-[30rem] h-[30rem] bg-rose-900/15 rounded-full animate-glow pointer-events-none -z-10" style="animation-delay: 1.5s;"></div>
+    <div class="fixed top-2/3 left-1/3 w-80 h-80 bg-teal-900/15 rounded-full animate-glow pointer-events-none -z-10" style="animation-delay: 3s;"></div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 border-b border-white/5 glass-panel px-4 lg:px-8 py-3.5 transition-all">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Brand -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('feed')">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500/30 to-amber-300/30 border border-white/20 flex items-center justify-center text-amber-200 text-sm shadow-inner">
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif text-xl sm:text-2xl font-normal tracking-wide text-slate-100 flex items-center gap-2">
+                        Dear you, <span class="text-xs sm:text-sm font-sans tracking-widest text-amber-200/70 uppercase">whoever you are</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Audio & Tab Actions -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Ambient Sound Player Toggle -->
+                <button id="soundToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-full glass-panel-light text-xs font-medium text-slate-300 hover:text-amber-200 hover:border-amber-400/30 transition-all flex items-center gap-2" title="Toggle Atmospheric Audio">
+                    <i id="soundIcon" class="fa-solid fa-volume-xmark text-slate-400"></i>
+                    <span id="soundLabel" class="hidden sm:inline">Ambient Audio</span>
+                </button>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center gap-1 bg-black/20 p-1 rounded-full border border-white/5">
+                    <button id="tabBtn-feed" onclick="switchTab('feed')" class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all bg-white/10 text-white shadow-sm">
+                        <i class="fa-solid fa-compass sm:mr-1.5"></i><span class="hidden sm:inline">Ocean of Letters</span>
+                    </button>
+                    <button id="tabBtn-write" onclick="switchTab('write')" class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all">
+                        <i class="fa-solid fa-pen-nib sm:mr-1.5"></i><span class="hidden sm:inline">Write</span>
+                    </button>
+                    <button id="tabBtn-sanctuary" onclick="switchTab('sanctuary')" class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all relative">
+                        <i class="fa-solid fa-box-archive sm:mr-1.5"></i><span class="hidden sm:inline">Sanctuary</span>
+                        <span id="savedBadge" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full"></span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+
+        <!-- Welcome / Intent Banner -->
+        <div id="welcomeBanner" class="mb-8 p-6 rounded-2xl glass-panel border-amber-500/10 relative overflow-hidden group">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="space-y-1.5 max-w-3xl">
+                    <h2 class="font-serif text-2xl sm:text-3xl font-light text-amber-100/90 tracking-wide">
+                        Leave your thoughts to the night sky.
+                    </h2>
+                    <p class="text-sm text-slate-300/80 leading-relaxed font-light">
+                        This is a quiet corner for your unsaid words, heavy hearts, quiet celebrations, and unposted letters. No real names, no algorithms, no judgment. Just human souls reaching out across the dark.
+                    </p>
+                </div>
+                <div class="flex items-center gap-3 self-end sm:self-center">
+                    <button onclick="openRandomLetterModal()" class="px-4 py-2 rounded-xl bg-amber-400/10 hover:bg-amber-400/20 text-amber-200 border border-amber-400/20 text-xs font-medium transition-all flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Read Random Unread
+                    </button>
+                    <button onclick="dismissBanner()" class="text-slate-500 hover:text-slate-300 text-xs p-2" title="Dismiss Message">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 1: OCEAN OF LETTERS (FEED) ================= -->
+        <section id="section-feed" class="space-y-6">
+            <!-- Filter & Search Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-4 glass-panel p-4 rounded-2xl border border-white/5">
+                <!-- Mood Filter Badges -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 w-full lg:w-auto scrollbar-none">
+                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider mr-1 flex items-center gap-1">
+                        <i class="fa-solid fa-filter text-[10px]"></i> Tone:
+                    </span>
+                    <button onclick="filterByMood('all')" class="mood-filter-btn active px-3 py-1 rounded-full text-xs font-medium transition-all bg-white/15 text-amber-200 border border-white/10" data-mood="all">
+                        All Letters
+                    </button>
+                    <button onclick="filterByMood('Hopeful')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-teal-200" data-mood="Hopeful">
+                        🌱 Hopeful
+                    </button>
+                    <button onclick="filterByMood('Heartbroken')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-rose-200" data-mood="Heartbroken">
+                        🌧️ Heartbroken
+                    </button>
+                    <button onclick="filterByMood('Nostalgic')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-amber-200" data-mood="Nostalgic">
+                        🍂 Nostalgic
+                    </button>
+                    <button onclick="filterByMood('Grateful')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-emerald-200" data-mood="Grateful">
+                        ✨ Grateful
+                    </button>
+                    <button onclick="filterByMood('Silent Longing')" class="mood-filter-btn px-3 py-1 rounded-full text-xs font-medium transition-all glass-panel-light text-slate-300 hover:text-indigo-200" data-mood="Silent Longing">
+                        🌙 Silent Longing
+                    </button>
+                </div>
+
+                <!-- Recipient Search Input -->
+                <div class="relative w-full sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search recipients, tags..." class="w-full bg-black/30 border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400/40 transition-all">
+                </div>
+            </div>
+
+            <!-- Letter Cards Grid -->
+            <div id="lettersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated letters -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyFeedState" class="hidden text-center py-16 space-y-4">
+                <div class="w-16 h-16 mx-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 text-xl">
+                    <i class="fa-regular fa-paper-plane"></i>
+                </div>
+                <p class="font-serif text-xl text-slate-300">No letters found matching this whisper.</p>
+                <button onclick="filterByMood('all')" class="text-xs text-amber-300 underline underline-offset-4">Reset filter criteria</button>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 2: WRITE A LETTER (COMPOSER) ================= -->
+        <section id="section-write" class="hidden max-w-3xl mx-auto space-y-6">
+            <div class="text-center space-y-2 mb-6">
+                <h2 class="font-serif text-3xl font-light text-amber-100">Speak into the Silence</h2>
+                <p class="text-xs text-slate-400 max-w-md mx-auto">
+                    Take a deep breath. Write what you couldn't say. Release it anonymously into the universe or keep it locked inside your local sanctuary.
+                </p>
+            </div>
+
+            <!-- Main Composer Card -->
+            <div id="composerCard" class="envelope-wrapper letter-paper rounded-2xl p-6 sm:p-10 shadow-2xl relative border border-black/10 dark:border-white/10">
+                <form id="letterForm" onsubmit="handleReleaseLetter(event)" class="space-y-6">
+                    
+                    <!-- Recipient & Privacy Selector -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-2 space-y-1.5">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">To (Recipient)</label>
+                            <div class="relative">
+                                <input type="text" id="recipientInput" required list="recipientSuggestions" placeholder="e.g., Someone I miss, My 18-year-old self..." class="w-full bg-transparent border-b border-slate-300 dark:border-slate-700 py-2 text-sm sm:text-base font-serif italic text-slate-800 dark:text-slate-100 focus:outline-none focus:border-amber-500 transition-all placeholder-slate-400">
+                                <datalist id="recipientSuggestions">
+                                    <option value="To: Someone I miss"></option>
+                                    <option value="To: The stranger on the train"></option>
+                                    <option value="To: My past self"></option>
+                                    <option value="To: My future self"></option>
+                                    <option value="To: Anyone listening"></option>
+                                    <option value="To: You, who broke my heart"></option>
+                                </datalist>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Letter Purpose</label>
+                            <select id="privacyInput" class="w-full bg-black/5 dark:bg-white/5 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-sans text-slate-700 dark:text-slate-200 focus:outline-none focus:border-amber-500">
+                                <option value="public">🌐 Release to Universe (Public)</option>
+                                <option value="private">🔒 Keep in Private Sanctuary</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subject / Title -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Subject / Title (Optional)</label>
+                        <input type="text" id="titleInput" placeholder="A quiet title..." class="w-full bg-transparent border-b border-slate-200 dark:border-slate-800 py-1.5 text-sm font-sans text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-500 transition-all">
+                    </div>
+
+                    <!-- Mood / Tone Selection -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Emotional Tone</label>
+                        <div class="flex flex-wrap gap-2" id="composerMoods">
+                            <button type="button" onclick="selectComposerMood(this, 'Hopeful')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-teal-400 transition-all">🌱 Hopeful</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Heartbroken')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-rose-400 transition-all">🌧️ Heartbroken</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Nostalgic')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-amber-400 transition-all">🍂 Nostalgic</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Grateful')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-emerald-400 transition-all">✨ Grateful</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Silent Longing')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-indigo-400 transition-all">🌙 Silent Longing</button>
+                            <button type="button" onclick="selectComposerMood(this, 'Confused')" class="mood-chip px-3 py-1 rounded-full text-xs border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-purple-400 transition-all">🌫️ Confused</button>
+                        </div>
+                    </div>
+
+                    <!-- Body TextArea -->
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Your Unsaid Words</label>
+                        <textarea id="bodyInput" required rows="9" placeholder="Dear you..." class="w-full bg-transparent border-none focus:outline-none font-serif text-base sm:text-lg text-slate-800 dark:text-slate-100 leading-relaxed resize-y placeholder-slate-400"></textarea>
+                    </div>
+
+                    <!-- Footer & Actions -->
+                    <div class="pt-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 text-xs text-slate-400">
+                            <button type="button" onclick="saveDraft()" class="hover:text-amber-300 transition-all flex items-center gap-1.5">
+                                <i class="fa-regular fa-floppy-disk"></i> Save Local Draft
+                            </button>
+                            <span id="draftStatus" class="italic text-emerald-400 hidden">Saved!</span>
+                        </div>
+
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <button type="button" onclick="clearComposer()" class="w-1/2 sm:w-auto px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-slate-200 transition-all">Clear</button>
+                            <button type="submit" class="w-1/2 sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400/90 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-night-900 font-medium text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Release to the Wind</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 3: SANCTUARY (PERSONAL ARCHIVE) ================= -->
+        <section id="section-sanctuary" class="hidden space-y-8">
+            <div class="text-center space-y-2">
+                <h2 class="font-serif text-3xl font-light text-amber-100">Your Local Sanctuary</h2>
+                <p class="text-xs text-slate-400 max-w-md mx-auto">
+                    Letters you have kept strictly private on your device, alongside favorite community whispers you've saved to revisit.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Private Unsent Letters -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                        <h3 class="font-serif text-xl text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-lock text-xs text-amber-300"></i> Private Letters (Only on this device)
+                        </h3>
+                        <span id="privateCount" class="text-xs bg-white/10 px-2.5 py-0.5 rounded-full text-slate-400">0</span>
+                    </div>
+                    <div id="privateLettersList" class="space-y-4">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Saved Favorites -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                        <h3 class="font-serif text-xl text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-bookmark text-xs text-amber-300"></i> Saved Whispers
+                        </h3>
+                        <span id="favoritesCount" class="text-xs bg-white/10 px-2.5 py-0.5 rounded-full text-slate-400">0</span>
+                    </div>
+                    <div id="favoriteLettersList" class="space-y-4">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= SINGLE LETTER READER MODAL ================= -->
+    <div id="letterModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-all opacity-0">
+        <div class="letter-paper max-w-2xl w-full max-h-[85vh] rounded-2xl shadow-2xl overflow-y-auto p-6 sm:p-10 relative border border-white/20 transform scale-95 transition-transform duration-300" id="modalCard">
+            <!-- Close Button -->
+            <button onclick="closeLetterModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-black/20 transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Modal Content Header -->
+            <div class="space-y-3 mb-6">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span id="modalRecipient" class="font-serif italic text-lg sm:text-xl text-slate-700 dark:text-amber-200">To: Someone</span>
+                    <span id="modalMood" class="text-xs px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-slate-600 dark:text-slate-300">Tone</span>
+                </div>
+                <h3 id="modalTitle" class="font-sans text-xl font-medium text-slate-900 dark:text-slate-100">Title</h3>
+                <p id="modalTimestamp" class="text-xs text-slate-500 font-sans">Written under the midnight sky</p>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div id="modalBody" class="font-serif text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap border-t border-b border-black/10 dark:border-white/10 py-6 my-4">
+                Letter text goes here...
+            </div>
+
+            <!-- Modal Reaction Footer -->
+            <div class="space-y-4 pt-2">
+                <div class="text-xs text-slate-500 uppercase tracking-wider font-sans font-semibold">Send a gentle reaction</div>
+                <div class="flex flex-wrap items-center gap-2" id="modalReactionsContainer">
+                    <!-- Buttons generated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 glass-panel border-amber-400/30 text-amber-200 px-4 py-3 rounded-xl shadow-2xl text-xs sm:text-sm flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0">
+        <i class="fa-solid fa-sparkles text-amber-300"></i>
+        <span id="toastMessage">Your letter has been sent to the universe.</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        /* ================= INITIAL SEED DATA ================= */
+        const DEFAULT_LETTERS = [
+            {
+                id: 'l-101',
+                recipient: 'To: The stranger on the train',
+                title: 'You were reading Murakami',
+                body: 'We sat across from each other for forty-five minutes. You kept turning pages softly, and for a moment, the chaotic city noise just vanished. I almost asked what chapter you were on. I hope wherever your destination was, you reached it safely.',
+                mood: 'Nostalgic',
+                timestamp: 'Written at 11:42 PM under rain',
+                reactions: { heard: 14, light: 22, feel: 9, space: 18 },
+                isPublic: true
+            },
+            {
+                id: 'l-102',
+                recipient: 'To: My past self (age 17)',
+                title: 'It gets quieter, I promise',
+                body: 'I know you are sitting on the cold bathroom floor wondering how you will survive next week. Take a breath. We made it. We have a quiet apartment now, plants by the window, and a dog who sleeps at our feet. The storm passes.',
+                mood: 'Hopeful',
+                timestamp: 'Written at 2:15 AM under quiet stars',
+                reactions: { heard: 45, light: 60, feel: 38, space: 29 },
+                isPublic: true
+            },
+            {
+                id: 'l-103',
+                recipient: 'To: You, who walked away',
+                title: 'I stopped placing two cups out',
+                body: 'For months, I accidentally made coffee for two every single morning. Today was the first time I only poured one without feeling a sharp pang in my chest. I still care about you, but I am learning to let the silence be okay.',
+                mood: 'Heartbroken',
+                timestamp: 'Written at 4:05 AM in early morning fog',
+                reactions: { heard: 31, light: 19, feel: 44, space: 33 },
+                isPublic: true
+            },
+            {
+                id: 'l-104',
+                recipient: 'To: Anyone who feels invisible tonight',
+                title: 'A small candle in the dark',
+                body: 'If no one told you today: your presence matters. The quiet way you make tea, the gentle way you look at the sunset, the kindness you give even when exhausted. You leave warm ripples in this world.',
+                mood: 'Grateful',
+                timestamp: 'Written at 1:12 AM under clear skies',
+                reactions: { heard: 88, light: 120, feel: 52, space: 70 },
+                isPublic: true
+            },
+            {
+                id: 'l-105',
+                recipient: 'To: The city I left behind',
+                title: 'Neon shadows',
+                body: 'Do you still smell like summer rain and old bookshops? I miss the midnight walks along the river, but I had to grow somewhere else.',
+                mood: 'Silent Longing',
+                timestamp: 'Written at 3:30 AM',
+                reactions: { heard: 12, light: 8, feel: 15, space: 11 },
+                isPublic: true
+            }
+        ];
+
+        /* ================= STATE MANAGEMENT ================= */
+        let state = {
+            letters: [],
+            privateLetters: [],
+            savedFavorites: [],
+            selectedMoodFilter: 'all',
+            searchQuery: '',
+            composerSelectedMood: 'Hopeful',
+            audioPlaying: false
+        };
+
+        // Web Audio Context for ambient sounds
+        let audioCtx = null;
+        let ambientOscillator = null;
+        let ambientGain = null;
+        let rainBufferNode = null;
+
+        /* ================= INITIALIZATION ================= */
+        window.onload = function() {
+            initStars();
+            loadLocalStorage();
+            renderFeed();
+            renderSanctuary();
+            setupReactions();
+        };
+
+        function loadLocalStorage() {
+            // Load public/community letters or default
+            const localPublic = localStorage.getItem('dearyou_letters');
+            if (localPublic) {
+                try { state.letters = JSON.parse(localPublic); } catch (e) { state.letters = DEFAULT_LETTERS; }
+            } else {
+                state.letters = DEFAULT_LETTERS;
+                localStorage.setItem('dearyou_letters', JSON.stringify(DEFAULT_LETTERS));
+            }
+
+            // Load private letters
+            const localPrivate = localStorage.getItem('dearyou_private_letters');
+            if (localPrivate) {
+                try { state.privateLetters = JSON.parse(localPrivate); } catch (e) { state.privateLetters = []; }
+            }
+
+            // Load saved favorite IDs
+            const localFavs = localStorage.getItem('dearyou_favorites');
+            if (localFavs) {
+                try { state.savedFavorites = JSON.parse(localFavs); } catch (e) { state.savedFavorites = []; }
+            }
+
+            updateSavedBadge();
+        }
+
+        /* ================= NAVIGATION & TABS ================= */
+        function switchTab(tabName) {
+            const tabs = ['feed', 'write', 'sanctuary'];
+            tabs.forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tabBtn-${t}`);
+                if (t === tabName) {
+                    sec.classList.remove('hidden');
+                    btn.classList.add('bg-white/10', 'text-white', 'shadow-sm');
+                    btn.classList.remove('text-slate-400');
+                } else {
+                    sec.classList.add('hidden');
+                    btn.classList.remove('bg-white/10', 'text-white', 'shadow-sm');
+                    btn.classList.add('text-slate-400');
+                }
+            });
+
+            if (tabName === 'sanctuary') renderSanctuary();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function dismissBanner() {
+            document.getElementById('welcomeBanner').classList.add('hidden');
+        }
+
+        /* ================= COMPOSER LOGIC ================= */
+        function selectComposerMood(btn, mood) {
+            document.querySelectorAll('#composerMoods button').forEach(b => {
+                b.classList.remove('bg-amber-400/20', 'border-amber-400', 'text-amber-200');
+            });
+            btn.classList.add('bg-amber-400/20', 'border-amber-400', 'text-amber-200');
+            state.composerSelectedMood = mood;
+        }
+
+        function handleReleaseLetter(event) {
+            event.preventDefault();
+            const recipient = document.getElementById('recipientInput').value.trim();
+            const title = document.getElementById('titleInput').value.trim() || 'Untitled Whisper';
+            const body = document.getElementById('bodyInput').value.trim();
+            const privacy = document.getElementById('privacyInput').value;
+
+            if (!recipient || !body) return;
+
+            const newLetter = {
+                id: 'l-' + Date.now(),
+                recipient: recipient,
+                title: title,
+                body: body,
+                mood: state.composerSelectedMood || 'Hopeful',
+                timestamp: `Written at ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} under the midnight sky`,
+                reactions: { heard: 1, light: 1, feel: 0, space: 0 },
+                isPublic: privacy === 'public'
+            };
+
+            const card = document.getElementById('composerCard');
+            card.classList.add('releasing');
+
+            setTimeout(() => {
+                if (privacy === 'public') {
+                    state.letters.unshift(newLetter);
+                    localStorage.setItem('dearyou_letters', JSON.stringify(state.letters));
+                    showToast("Your letter has been released into the night sky.");
+                } else {
+                    state.privateLetters.unshift(newLetter);
+                    localStorage.setItem('dearyou_private_letters', JSON.stringify(state.privateLetters));
+                    showToast("Saved to your Private Sanctuary.");
+                }
+
+                clearComposer();
+                card.classList.remove('releasing');
+                renderFeed();
+                renderSanctuary();
+                switchTab(privacy === 'public' ? 'feed' : 'sanctuary');
+            }, 700);
+        }
+
+        function saveDraft() {
+            const draft = {
+                recipient: document.getElementById('recipientInput').value,
+                title: document.getElementById('titleInput').value,
+                body: document.getElementById('bodyInput').value,
+                mood: state.composerSelectedMood
+            };
+            localStorage.setItem('dearyou_draft', JSON.stringify(draft));
+            const status = document.getElementById('draftStatus');
+            status.classList.remove('hidden');
+            setTimeout(() => status.classList.add('hidden'), 2000);
+        }
+
+        function clearComposer() {
+            document.getElementById('letterForm').reset();
+            localStorage.removeItem('dearyou_draft');
+        }
+
+        /* ================= FEED & CARDS RENDER ================= */
+        function filterByMood(mood) {
+            state.selectedMoodFilter = mood;
+            document.querySelectorAll('.mood-filter-btn').forEach(btn => {
+                if (btn.dataset.mood === mood) {
+                    btn.classList.add('bg-white/15', 'text-amber-200', 'border-white/10');
+                    btn.classList.remove('glass-panel-light', 'text-slate-300');
+                } else {
+                    btn.classList.remove('bg-white/15', 'text-amber-200', 'border-white/10');
+                    btn.classList.add('glass-panel-light', 'text-slate-300');
+                }
+            });
+            renderFeed();
+        }
+
+        function handleSearch() {
+            state.searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            renderFeed();
+        }
+
+        function renderFeed() {
+            const grid = document.getElementById('lettersGrid');
+            const empty = document.getElementById('emptyFeedState');
+            grid.innerHTML = '';
+
+            const filtered = state.letters.filter(letter => {
+                const matchesMood = state.selectedMoodFilter === 'all' || letter.mood === state.selectedMoodFilter;
+                const matchesSearch = letter.recipient.toLowerCase().includes(state.searchQuery) ||
+                                      letter.title.toLowerCase().includes(state.searchQuery) ||
+                                      letter.body.toLowerCase().includes(state.searchQuery);
+                return matchesMood && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            } else {
+                empty.classList.add('hidden');
+            }
+
+            filtered.forEach(letter => {
+                const isFav = state.savedFavorites.includes(letter.id);
+                const card = document.createElement('div');
+                card.className = "glass-panel p-6 rounded-2xl flex flex-col justify-between hover:border-white/20 transition-all hover:-translate-y-1 group relative overflow-hidden";
+                
+                card.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="flex items-start justify-between gap-2">
+                            <span class="font-serif italic text-amber-200/90 text-sm sm:text-base font-normal tracking-wide">${escapeHtml(letter.recipient)}</span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded-full glass-panel-light text-slate-300 border border-white/10">${getMoodEmoji(letter.mood)} ${letter.mood}</span>
+                        </div>
+                        <h4 class="font-sans font-medium text-slate-100 text-base leading-snug">${escapeHtml(letter.title)}</h4>
+                        <p class="font-serif text-slate-300/90 text-sm leading-relaxed line-clamp-4 italic font-light">
+                            "${escapeHtml(letter.body)}"
+                        </p>
+                    </div>
+
+                    <div class="pt-4 mt-6 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+                        <span class="text-[11px] font-sans text-slate-400">${letter.timestamp}</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleBookmark('${letter.id}')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 ${isFav ? 'text-amber-300' : ''}" title="Bookmark">
+                                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
+                            </button>
+                            <button onclick="openLetterModal('${letter.id}')" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-slate-200 transition-all font-medium text-[11px] flex items-center gap-1">
+                                Read <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* ================= MODAL READER & REACTIONS ================= */
+        let currentModalLetterId = null;
+
+        function openLetterModal(id) {
+            const letter = state.letters.find(l => l.id === id) || state.privateLetters.find(l => l.id === id);
+            if (!letter) return;
+
+            currentModalLetterId = id;
+            document.getElementById('modalRecipient').innerText = letter.recipient;
+            document.getElementById('modalMood').innerText = `${getMoodEmoji(letter.mood)} ${letter.mood}`;
+            document.getElementById('modalTitle').innerText = letter.title;
+            document.getElementById('modalTimestamp').innerText = letter.timestamp;
+            document.getElementById('modalBody').innerText = letter.body;
+
+            renderModalReactions(letter);
+
+            const modal = document.getElementById('letterModal');
+            const card = document.getElementById('modalCard');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                card.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeLetterModal() {
+            const modal = document.getElementById('letterModal');
+            const card = document.getElementById('modalCard');
+            modal.classList.add('opacity-0');
+            card.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function openRandomLetterModal() {
+            if (state.letters.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * state.letters.length);
+            openLetterModal(state.letters[randomIndex].id);
+        }
+
+        function renderModalReactions(letter) {
+            const container = document.getElementById('modalReactionsContainer');
+            container.innerHTML = '';
+
+            const reactions = [
+                { key: 'heard', label: 'You are heard', icon: '🕊️' },
+                { key: 'light', label: 'Sending light', icon: '✨' },
+                { key: 'feel', label: 'I feel this too', icon: '🌊' },
+                { key: 'space', label: 'Holding space', icon: '🕯️' }
+            ];
+
+            reactions.forEach(r => {
+                const count = (letter.reactions && letter.reactions[r.key]) || 0;
+                const btn = document.createElement('button');
+                btn.className = "px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 hover:bg-amber-400/20 text-slate-700 dark:text-slate-200 text-xs font-sans transition-all flex items-center gap-1.5 border border-black/10 dark:border-white/10";
+                btn.onclick = () => sendReaction(letter.id, r.key);
+                btn.innerHTML = `<span>${r.icon}</span> <span>${r.label}</span> <span class="text-[10px] opacity-70 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">${count}</span>`;
+                container.appendChild(btn);
+            });
+        }
+
+        function sendReaction(letterId, reactionKey) {
+            const letter = state.letters.find(l => l.id === letterId);
+            if (!letter) return;
+            if (!letter.reactions) letter.reactions = {};
+            letter.reactions[reactionKey] = (letter.reactions[reactionKey] || 0) + 1;
+
+            localStorage.setItem('dearyou_letters', JSON.stringify(state.letters));
+            renderModalReactions(letter);
+            renderFeed();
+            showToast("Warmth sent anonymously.");
+        }
+
+        /* ================= SANCTUARY & BOOKMARKS ================= */
+        function toggleBookmark(id) {
+            const idx = state.savedFavorites.indexOf(id);
+            if (idx > -1) {
+                state.savedFavorites.splice(idx, 1);
+                showToast("Removed from sanctuary.");
+            } else {
+                state.savedFavorites.push(id);
+                showToast("Saved to your sanctuary.");
+            }
+            localStorage.setItem('dearyou_favorites', JSON.stringify(state.savedFavorites));
+            updateSavedBadge();
+            renderFeed();
+            renderSanctuary();
+        }
+
+        function updateSavedBadge() {
+            const badge = document.getElementById('savedBadge');
+            if (state.savedFavorites.length > 0 || state.privateLetters.length > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function renderSanctuary() {
+            // Render Private
+            const privateContainer = document.getElementById('privateLettersList');
+            document.getElementById('privateCount').innerText = state.privateLetters.length;
+            privateContainer.innerHTML = '';
+
+            if (state.privateLetters.length === 0) {
+                privateContainer.innerHTML = `<div class="text-xs text-slate-500 italic py-4">No private letters written yet.</div>`;
+            } else {
+                state.privateLetters.forEach(letter => {
+                    const el = document.createElement('div');
+                    el.className = "glass-panel p-4 rounded-xl space-y-2 border border-white/5 relative group";
+                    el.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="font-serif italic text-amber-200 text-sm">${escapeHtml(letter.recipient)}</span>
+                            <button onclick="deletePrivateLetter('${letter.id}')" class="text-slate-500 hover:text-rose-400 text-xs p-1" title="Delete">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <h4 class="font-medium text-slate-200 text-sm">${escapeHtml(letter.title)}</h4>
+                        <p class="font-serif text-slate-300 text-xs line-clamp-2 italic">${escapeHtml(letter.body)}</p>
+                        <div class="pt-2 text-[10px] text-slate-500 flex justify-between items-center">
+                            <span>${letter.timestamp}</span>
+                            <button onclick="openLetterModal('${letter.id}')" class="text-amber-300 hover:underline">View</button>
+                        </div>
+                    `;
+                    privateContainer.appendChild(el);
+                });
+            }
+
+            // Render Saved Whispers
+            const favContainer = document.getElementById('favoriteLettersList');
+            const favLetters = state.letters.filter(l => state.savedFavorites.includes(l.id));
+            document.getElementById('favoritesCount').innerText = favLetters.length;
+            favContainer.innerHTML = '';
+
+            if (favLetters.length === 0) {
+                favContainer.innerHTML = `<div class="text-xs text-slate-500 italic py-4">No saved whispers yet. Click the bookmark icon on any letter.</div>`;
+            } else {
+                favLetters.forEach(letter => {
+                    const el = document.createElement('div');
+                    el.className = "glass-panel p-4 rounded-xl space-y-2 border border-white/5 relative";
+                    el.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="font-serif italic text-amber-200 text-sm">${escapeHtml(letter.recipient)}</span>
+                            <button onclick="toggleBookmark('${letter.id}')" class="text-amber-300 hover:text-slate-400 text-xs p-1" title="Remove">
+                                <i class="fa-solid fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <h4 class="font-medium text-slate-200 text-sm">${escapeHtml(letter.title)}</h4>
+                        <p class="font-serif text-slate-300 text-xs line-clamp-2 italic">${escapeHtml(letter.body)}</p>
+                        <div class="pt-2 text-[10px] text-slate-500 flex justify-between items-center">
+                            <span>${letter.timestamp}</span>
+                            <button onclick="openLetterModal('${letter.id}')" class="text-amber-300 hover:underline">Read</button>
+                        </div>
+                    `;
+                    favContainer.appendChild(el);
+                });
+            }
+        }
+
+        function deletePrivateLetter(id) {
+            state.privateLetters = state.privateLetters.filter(l => l.id !== id);
+            localStorage.setItem('dearyou_private_letters', JSON.stringify(state.privateLetters));
+            renderSanctuary();
+            showToast("Private letter deleted.");
+        }
+
+        /* ================= ATMOSPHERIC AUDIO (WEB AUDIO API) ================= */
+        function toggleAudio() {
+            const btn = document.getElementById('soundToggleBtn');
+            const icon = document.getElementById('soundIcon');
+            const label = document.getElementById('soundLabel');
+
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            if (!state.audioPlaying) {
+                // Play soft atmospheric synth drone
+                audioCtx.resume();
+                
+                ambientOscillator = audioCtx.createOscillator();
+                ambientGain = audioCtx.createGain();
+
+                ambientOscillator.type = 'sine';
+                ambientOscillator.frequency.setValueAtTime(110, audioCtx.currentTime); // A2 soft tone
+                
+                // Lowpass filter for warm atmosphere
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(350, audioCtx.currentTime);
+
+                ambientGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+                ambientGain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 3);
+
+                ambientOscillator.connect(filter);
+                filter.connect(ambientGain);
+                ambientGain.connect(audioCtx.destination);
+
+                ambientOscillator.start();
+
+                state.audioPlaying = true;
+                icon.className = "fa-solid fa-volume-high text-amber-300 animate-pulse";
+                label.innerText = "Ambient Playing";
+                btn.classList.add('border-amber-400/40');
+                showToast("Soft atmospheric audio enabled.");
+            } else {
+                if (ambientGain) {
+                    ambientGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1);
+                    setTimeout(() => {
+                        ambientOscillator.stop();
+                        ambientOscillator.disconnect();
+                    }, 1000);
+                }
+                state.audioPlaying = false;
+                icon.className = "fa-solid fa-volume-xmark text-slate-400";
+                label.innerText = "Ambient Audio";
+                btn.classList.remove('border-amber-400/40');
+            }
+        }
+
+        /* ================= BACKGROUND STARRY PARTICLES ================= */
+        function initStars() {
+            const canvas = document.getElementById('starCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = (canvas.width = window.innerWidth);
+            let height = (canvas.height = window.innerHeight);
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = Array.from({ length: 70 }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 1.5 + 0.5,
+                alpha: Math.random() * 0.7 + 0.2,
+                speed: Math.random() * 0.15 + 0.05,
+                drift: (Math.random() - 0.5) * 0.1
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                particles.forEach(p => {
+                    p.y -= p.speed;
+                    p.x += p.drift;
+
+                    if (p.y < 0) p.y = height;
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(253, 230, 138, ${p.alpha})`;
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        /* ================= UTILITY HELPERS ================= */
+        function getMoodEmoji(mood) {
+            const map = {
+                'Hopeful': '🌱',
+                'Heartbroken': '🌧️',
+                'Nostalgic': '🍂',
+                'Grateful': '✨',
+                'Silent Longing': '🌙',
+                'Confused': '🌫️'
+            };
+            return map[mood] || '🕊️';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+```
